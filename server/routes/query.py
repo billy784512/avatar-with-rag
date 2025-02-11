@@ -5,9 +5,6 @@ from utils.model import QueryItem
 from services.ai_search_service import AiSearchService
 
 router = APIRouter()
-
-print(config.AiSearch.ENDPOINT, config.AiSearch.KEY)
-
 ai_search_service = AiSearchService(config.AiSearch.ENDPOINT, config.AiSearch.KEY, "paper-idx")
 
 @router.get("/")
