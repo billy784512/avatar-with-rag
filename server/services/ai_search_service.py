@@ -1,12 +1,9 @@
 import requests
-import json
 from typing import List, Dict
 
 from azure.core.credentials import AzureKeyCredential
-
 from azure.search.documents import SearchClient
 from azure.search.documents.models import (
-    VectorizedQuery,
     QueryType,
     QueryCaptionType,
     QueryAnswerType,
@@ -81,7 +78,10 @@ class AiSearchService():
         return combined_results
     
     def query_openai(self, user_input:str, combined_results: List[Dict]) -> Dict:
-        base_url = f"{self.opei_ai_info.get("azure_openai_endpoint")}openai/deployments/{self.opei_ai_info.get("text_deployment_name")}" 
+        val1 = self.opei_ai_info.get("azure_openai_endpoint")
+        val2 = self.opei_ai_info.get("text_deployment_name")
+        val3 = self.opei_ai_info.get("azure_openai_api_version")
+        base_url = f"{val1}openai/deployments/{val2}" 
 
         headers = {   
             "Content-Type": "application/json",   
@@ -89,7 +89,7 @@ class AiSearchService():
         } 
         
         # Prepare endpoint and request body
-        endpoint = f"{base_url}/chat/completions?api-version={self.opei_ai_info.get("azure_openai_api_version")}"  # The endpoint for making execution requests
+        endpoint = f"{base_url}/chat/completions?api-version={val3}"  # The endpoint for making execution requests
 
         system_prompt = """  
         Utilize emojis when responding to Chi-Chat inquiries. As an AI assistant, your primary functions are to provide answers based on a Knowledge Base, fetch weather data, and retrieve specific file contents.  

@@ -1,8 +1,7 @@
 from fastapi import FastAPI
 
-app = FastAPI()
+from routes.query import router as query_router
 
-@app.get("/")
-def hello():
-    return {"message": "Hello, FastAPI!"}
+app = FastAPI()
+app.include_router(query_router)
 
