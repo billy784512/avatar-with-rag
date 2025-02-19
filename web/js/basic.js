@@ -7,6 +7,13 @@ var peerConnection
 var useTcpForWebRTC = false
 var previousAnimationFrameTimestamp = 0;
 
+// Options for avatar style
+const styleMap = {
+    "harry": ["business", "casual", "youthful"],
+    "jeff": ["formal"], //business
+    "lisa": ["casual-sitting"] //"graceful-sitting", "graceful-standing", "technical-sitting", "technical-standing"],
+}
+
 // Logger
 const log = msg => {
     document.getElementById('logging').innerHTML += msg + '<br>'
@@ -183,6 +190,24 @@ function htmlEncode(text) {
     };
 
     return String(text).replace(/[&<>"'\/]/g, (match) => entityMap[match])
+}
+
+// Dynamic options handler
+function updateAvatarStyleOptions(){
+    let ddl_a = document.getElementById("talkingAvatarCharacter");
+    let ddl_b = document.getElementById("talkingAvatarStyle");
+
+    let selectedAvatar = ddl_a.value;
+    let styleOptions = styleMap[selectedAvatar] || [];
+
+    ddl_b.innerHTML = "";
+    
+    styleOptions.forEach(option => {
+        let newOption = document.createElement("option");
+        newOption.value = option;
+        newOption.textContent = option;
+        ddl_b.appendChild(newOption);
+    })
 }
 
 window.startSession = () => {

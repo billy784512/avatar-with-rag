@@ -164,7 +164,8 @@ section:last-of-type {
 }
 
 select {
-    margin: 0 1em 1em 0;
+    font-size: 16px;
+    /* margin: 0 1em 1em 0; */
     position: relative;
     top: -1px;
 }

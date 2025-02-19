@@ -34,7 +34,13 @@
 
   <h2 style="background-color: white; width: 300px;">TTS Configuration</h2>
   <label style="font-size: medium;" for="ttsVoice">TTS Voice:</label>
-  <input id="ttsVoice" type="text" size="32" style="font-size: medium;" value="en-US-AvaMultilingualNeural"></input><br />
+  <select id="ttsVoice">
+    <option value="zh-CN-XiaoxiaoNeural"> zh-CN-XiaoxiaoNeural </option>
+    <option value="zh-CN-YunjianNeural"> zh-CN-YunjianNeural </option>
+    <option value="en-US-JasonNeural"> en-US-JasonNeural </option>
+    <option value="en-US-JaneNeural"> en-US-JaneNeural </option>
+  </select><br />
+  <!-- <input id="ttsVoice" type="text" size="32" style="font-size: medium;" value="en-US-AvaMultilingualNeural"></input><br /> -->
   <label style="font-size: medium;" for="customVoiceEndpointId">Custom Voice Deployment ID (Endpoint ID):</label>
   <input id="customVoiceEndpointId" type="text" size="32" style="font-size: medium;" value=""></input><br />
   <label style="font-size: medium;" for="personalVoiceSpeakerProfileID">Personal Voice Speaker Profile ID:</label>
@@ -43,9 +49,19 @@
 
   <h2 style="background-color: white; width: 300px;">Avatar Configuration</h2>
   <label style="font-size: medium;" for="talkingAvatarCharacter">Avatar Character:</label>
-  <input id="talkingAvatarCharacter" type="text" size="16" style="font-size: medium;" value="lisa"></input><br />
+  <select id="talkingAvatarCharacter" onchange="updateAvatarStyleOptions()">
+    <option value="harry"> Harry </option>
+    <option value="jeff"> Jeff </option>
+    <option value="lisa"> Lisa </option>
+  </select><br />
+  <!-- <input id="talkingAvatarCharacter" type="text" size="16" style="font-size: medium;" value="lisa"></input><br /> -->
   <label style="font-size: medium;" for="talkingAvatarStyle">Avatar Style:</label>
-  <input id="talkingAvatarStyle" type="text" size="16" style="font-size: medium;" value="casual-sitting"></input><br />
+  <select id="talkingAvatarStyle">
+    <option value="business"> business </option>
+    <option value="casual"> casual </option>
+    <option value="youthful"> youthful </option>
+  </select><br />
+  <!-- <input id="talkingAvatarStyle" type="text" size="16" style="font-size: medium;" value="casual-sitting"></input><br /> -->
   <label style="font-size: medium;" for="backgroundColor">Background Color:</label>
   <input id="backgroundColor" type="text" size="16" style="font-size: medium;" value="#FFFFFFFF"></input><br />
   <label style="font-size: medium;" for="backgroundImageUrl">Background Image (URL):</label>
