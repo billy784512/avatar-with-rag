@@ -15,6 +15,9 @@ class Config:
     class AzureOpenAi:
         ENDPOINT = os.getenv("AZURE_OPENAI_ENDPOINT")
         KEY = os.getenv("AZURE_OPENAI_KEY")
+        API_VERSION = os.getenv("AZURE_OPENAI_API_VERSION")
+        EMBEDDING_DEPLOYMENT = os.getenv("AZURE_OPENAI_EMBEDDING_DEPLOYMENT")
+        TEXT_DEPLOYMENT = os.getenv("AZURE_OPENAI_TEXT_DEPLOYMENT")
 
     class BlobStorage:
         CONN_STR = os.getenv("BLOB_CONNECTION_STRING")
