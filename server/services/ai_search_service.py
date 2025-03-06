@@ -22,16 +22,12 @@ class AiSearchService():
         self.setup_openai_info()
 
     def setup_openai_info(self) -> None:
-        # hard code for fast development
         self.opei_ai_info = {
             "azure_openai_endpoint": config.AzureOpenAi.ENDPOINT,
             "azure_openai_key": config.AzureOpenAi.KEY,
             "azure_openai_api_version": config.AzureOpenAi.API_VERSION,
             "azure_openai_embedding_deployment": config.AzureOpenAi.EMBEDDING_DEPLOYMENT,
             "text_deployment_name": config.AzureOpenAi.TEXT_DEPLOYMENT
-            # "azure_openai_api_version": "2024-08-01-preview",
-            # "azure_openai_embedding_deployment": "text-embedding-3-large",
-            # "text_deployment_name": "gpt-4o"
         }
 
     def query_documents(self, query: str, search_type: str='semantic', query_language: str="zh-tw") -> List[Dict]:
