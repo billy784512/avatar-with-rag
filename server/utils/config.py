@@ -7,6 +7,7 @@ class Config:
     class AiSearch:
         ENDPOINT = os.getenv("AI_SEARCH_ENDPOINT")
         KEY = os.getenv("AI_SEARCH_KEY")
+        INDEX_NAME = os.getenv("AI_SEARCH_INDEX_NAME")
 
     class DocumentIntelligence:
         ENDPOINT = os.getenv("DOC_INTELLIGENCE_ENDPOINT")

@@ -2,13 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Talking Avatar Service Demo</title>
+    <title>Talking Avatar Chat Demo</title>
     <link href="./css/styles.css" rel="stylesheet">
     <script src="https://aka.ms/csspeech/jsbrowserpackageraw"></script>
-    <script src="./js/basic.js"></script>
+    <script src="./js/chat.js"></script>
 </head>
 <body>
-<h1>Talking Avatar Service Demo</h1>
+<h1>Talking Avatar Chat Demo</h1>
 
 <div id="configuration">
   <h2 style="background-color: white; width: 300px;">Azure Speech Resource</h2>
@@ -32,7 +32,9 @@
     <input id="privateEndpoint" type="text" size="64" style="font-size: medium;" placeholder="https://{your custom name}.cognitiveservices.azure.com/"></input><br />
   </div><br />
 
-  <h2 style="background-color: white; width: 300px;">TTS Configuration</h2>
+  <h2 style="background-color: white; width: 300px;">STT / TTS Configuration</h2>
+  <label style="font-size: medium;" for="sttLocale">STT Locale(s):</label>
+  <input id="sttLocales" type="text" size="64" style="font-size: medium;" value="en-US,de-DE,es-ES,fr-FR,it-IT,ja-JP,ko-KR,zh-CN"></input><br />
   <label style="font-size: medium;" for="ttsVoice">TTS Voice:</label>
   <select id="ttsVoice">
     <option value="zh-CN-XiaoxiaoNeural"> zh-CN-XiaoxiaoNeural </option>
@@ -40,10 +42,14 @@
     <option value="en-US-JasonNeural"> en-US-JasonNeural </option>
     <option value="en-US-JaneNeural"> en-US-JaneNeural </option>
   </select><br />
+  <!-- <input id="ttsVoice" type="text" size="32" style="font-size: medium;" value="en-US-AvaMultilingualNeural"></input><br /> -->
   <label style="font-size: medium;" for="customVoiceEndpointId">Custom Voice Deployment ID (Endpoint ID):</label>
   <input id="customVoiceEndpointId" type="text" size="32" style="font-size: medium;" value=""></input><br />
   <label style="font-size: medium;" for="personalVoiceSpeakerProfileID">Personal Voice Speaker Profile ID:</label>
   <input id="personalVoiceSpeakerProfileID" type="text" size="32" style="font-size: medium;" value=""></input><br />
+  <div style="background-color: white; width: 300px;">
+    <input type="checkbox" id="continuousConversation">Continuous Conversation</input><br />
+  </div>
   <br />
 
   <h2 style="background-color: white; width: 300px;">Avatar Configuration</h2>
@@ -53,48 +59,59 @@
     <option value="jeff"> Jeff </option>
     <option value="lisa"> Lisa </option>
   </select><br />
+  <!-- <input id="talkingAvatarCharacter" type="text" size="16" style="font-size: medium;" value="lisa"></input><br /> -->
   <label style="font-size: medium;" for="talkingAvatarStyle">Avatar Style:</label>
   <select id="talkingAvatarStyle">
     <option value="business"> business </option>
     <option value="casual"> casual </option>
     <option value="youthful"> youthful </option>
   </select><br />
-  <label style="font-size: medium;" for="backgroundColor">Background Color:</label>
-  <input id="backgroundColor" type="text" size="16" style="font-size: medium;" value="#FFFFFFFF"></input><br />
-  <label style="font-size: medium;" for="backgroundImageUrl">Background Image (URL):</label>
-  <input id="backgroundImageUrl" type="text" size="64" style="font-size: medium;" placeholder="https://www.example.com/1920-1080-image.jpg" value=""></input><br />
+  <!-- <input id="talkingAvatarStyle" type="text" size="16" style="font-size: medium;" value="casual-sitting"></input><br /> -->
   <div style="background-color: white; width: 200px;">
     <input type="checkbox" id="customizedAvatar">Custom Avatar</input><br />
-    <input type="checkbox" id="transparentBackground" onchange="window.updataTransparentBackground()">Transparent
-    Background</input><br />
-    <input type="checkbox" id="videoCrop">Video Crop</input><br />
+  </div>
+  <div style="background-color: white; width: 200px;">
+    <input type="checkbox" id="autoReconnectAvatar">Auto Reconnect</input><br />
+  </div>
+  <div style="background-color: white; width: 200px;">
+    <input type="checkbox" id="useLocalVideoForIdle" onchange="window.updateLocalVideoForIdle()">Use Local Video for Idle</input><br />
   </div>
   <br />
 </div>
 
-<h2 style="background-color: white; width: 300px;">Avatar Control Panel</h2>
-<label style="font-size: medium;" for="spokenText">Spoken Text:</label><br/>
-<textarea id="spokenText" style="height:40px">Hello world!</textarea><br/>
-<button id="startSession" onclick="window.startSession()">Start Session</button>
-<button id="speak" onclick="window.speak()" disabled="disabled">Speak</button>
-<button id="stopSpeaking" onclick="window.stopSpeaking()" disabled="disabled">Stop Speaking</button>
-<button id="stopSession" onclick="window.stopSession()" disabled="disabled">Stop Session</button>
-<br/>
+<button id="startSession" onclick="window.startSession()">Open Avatar Session</button>
+<button id="microphone" onclick="window.microphone()" disabled>Start Microphone</button>
+<button id="stopSpeaking" onclick="stopSpeaking()" disabled>Stop Speaking</button>
+<button id="clearChatHistory" onclick="window.clearChatHistory()">Clear Chat History</button>
+<button id="stopSession" onclick="window.stopSession()" disabled>Close Avatar Session</button>
 
-<h2 id="videoLabel" style="background-color: white; width: 300px;">Avatar Video</h2>
 <div id="videoContainer" style="position: relative; width: 960px;">
-  <div id="overlayArea" style="position: absolute;" hidden="hidden">
-    <!-- Add your text or image controls here -->
-    <p id="overlayText" style="font-size: large;">Live Video</p>
-    <!-- <img id="overlayImage" src="your-image-source.png" alt="Overlay Image"> -->
+  <div id="overlayArea" style="position: absolute;">
+    <div id="chatHistory" style="
+        width: 360px;
+        height: 500px;
+        font-size: medium;
+        border: none;
+        resize: none;
+        background-color: transparent;
+        overflow: hidden;" contentEditable="true" hidden></div>
+    </div>
+    <div id="localVideo" hidden>
+      <video src="video/lisa-casual-sitting-idle.mp4" autoplay loop muted></video>
+    </div>
+    <div id="remoteVideo"></div>
   </div>
-  <div id="remoteVideo"></div>
-  <canvas id="canvas" width="1920" height="1080" style="background-color: transparent;" hidden="hidden"></canvas>
-  <canvas id="tmpCanvas" width="1920" height="1080" hidden="hidden"></canvas>
-</div>
-<br/>
-
-<h2 style="background-color: white; width: 300px;">Logs</h2>
-<div id="logging" style="background-color: white;"></div>
+  <div margin-top="5px">
+    <div id="showTypeMessageCheckbox">
+      <input type="checkbox" id="showTypeMessage" onchange="window.updateTypeMessageBox()" disabled>Type Message</input><br />
+    </div>
+    <div id="userMessageBox"
+      style="width: 940px; min-height: 150px; max-height: 200px; border: 1px solid ; overflow-y: scroll; padding: 10px;"
+      hidden type="text" contentEditable="true"></div>
+  </div>
+  <div>
+    <img id="uploadImgIcon" src="./image/attachment.jpg" alt="Button" style="cursor: pointer;" hidden />
+  </div>
 </body>
+
 </html>

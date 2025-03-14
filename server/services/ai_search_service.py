@@ -1,5 +1,6 @@
 import requests
-from typing import List, Dict
+import logging
+from typing import List, Dict, Generator
 
 from azure.core.credentials import AzureKeyCredential
 from azure.search.documents import SearchClient
@@ -77,6 +78,28 @@ class AiSearchService():
         return combined_results
     
     def query_openai(self, user_input:str, combined_results: List[Dict]) -> Dict:
+        request_info = self.__prepare_openai_request(user_input, combined_results, False)
+        response = requests.post(request_info["endpoint"], headers=request_info["headers"], json=request_info["data"])
+        
+        if response.status_code != 200:
+            return {"error": response.text}
+        
+        return response.json()
+
+    def query_openai_stream(self, user_input:str, combined_results: List[Dict]) -> Generator[str, None, None]:
+        request_info = self.__prepare_openai_request(user_input, combined_results, True)
+        response = requests.post(request_info["endpoint"], headers=request_info["headers"], json=request_info["data"])
+
+        def event_stream():
+            for line in response.iter_lines():
+                if line:
+                    decode_line = line.decode("utf-8")
+                    print(f"{decode_line}")
+                    yield decode_line + "\n\n"
+        
+        return event_stream()
+    
+    def __prepare_openai_request(self, user_input: str, combined_results: List[Dict], stream: bool) -> Dict:
         val1 = self.opei_ai_info.get("azure_openai_endpoint")
         val2 = self.opei_ai_info.get("text_deployment_name")
         val3 = self.opei_ai_info.get("azure_openai_api_version")
@@ -121,11 +144,8 @@ class AiSearchService():
             ], 
             "max_tokens": 750,
             "temperature": 0,
-        }   
+            "stream": stream
+        }
 
-        response = requests.post(endpoint, headers=headers, json=data)
-        
-        if response.status_code != 200:
-            return {"error": response.text}
-        
-        return response.json()
+        return {"endpoint": endpoint, "headers": headers, "data": data}
+    
